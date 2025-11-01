@@ -1,0 +1,705 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Global Performance Optimizations */
+html {
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #111827;
+  zoom: 1.03;
+  font-smooth: always;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Experience Section Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Delay utility for animations */
+.delay-300 {
+  animation-delay: 300ms;
+  transition-delay: 300ms;
+}
+
+/* Custom cursor styles */
+@media (pointer: fine) and (hover: hover) {
+  html, body {
+    cursor: none;
+  }
+
+  .cc-dot, .cc-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate3d(-50%, -50%, 0);
+    transition: opacity 150ms ease;
+  }
+
+  .cc-dot {
+    width: 6px;
+    height: 6px;
+    background: #1d4ed8; /* blue-700 */
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(29, 78, 216, 0.15);
+    opacity: 0;
+  }
+  .cc-dot.cc-dot--active {
+    transform: translate3d(-50%, -50%, 0) scale(0.85);
+  }
+
+  .cc-ring {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(29, 78, 216, 0.35); /* blue-700 @ 35% */
+    backdrop-filter: blur(2px);
+    opacity: 0;
+  }
+  .cc-ring.cc-ring--hover {
+    border-color: rgba(29, 78, 216, 0.6);
+    transform: translate3d(-50%, -50%, 0) scale(1.15);
+  }
+  .cc-ring.cc-ring--active {
+    border-color: rgba(29, 78, 216, 0.9);
+    transform: translate3d(-50%, -50%, 0) scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Minimal styles for the Download CV button */
+.cyber-button-super {
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition relative overflow-hidden;
+}
+.secondary-btn-super {
+  @apply bg-white text-purple-700 border border-purple-300 shadow hover:bg-purple-50 hover:border-purple-400;
+}
+.cyber-button-super .btn-icon {
+  @apply ml-1;
+}
+.cyber-button-super .btn-particles-super {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(167,139,250,0.25), transparent 70%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.cyber-button-super:hover .btn-particles-super {
+  opacity: 1;
+}
+
+/* Global styles for ScrollStack component */
+.scroll-stack-scroller {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scroll-stack-inner {
+  position: relative;
+}
+
+.scroll-stack-card {
+  position: relative;
+  will-change: transform, filter;
+}
+
+/* Spacer so the last pin can release cleanly */
+.scroll-stack-end {
+  height: 60vh;
+  pointer-events: none;
+}
+
+/* ===== RESPONSIVE DESIGN UTILITIES ===== */
+
+/* Responsive Container */
+.responsive-container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .responsive-container {
+    padding-left: 1.5rem; /* sm:px-6 */
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-container {
+    max-width: 80rem; /* max-w-6xl */
+    padding-left: 2rem; /* lg:px-8 */
+    padding-right: 2rem;
+  }
+}
+
+/* Flexible Grid Layout */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* Hero Section Responsive */
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hero-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-layout {
+    gap: 3rem;
+  }
+}
+
+/* Responsive Typography Base */
+.text-responsive-sm {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .text-responsive-sm {
+    font-size: 1rem; /* sm:text-base */
+    line-height: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-sm {
+    font-size: 1.125rem; /* lg:text-lg */
+    line-height: 1.75rem;
+  }
+}
+
+.text-responsive-lg {
+  font-size: 1.5rem; /* text-2xl */
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .text-responsive-lg {
+    font-size: 2rem; /* sm:text-3xl */
+    line-height: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-lg {
+    font-size: 2.5rem; /* lg:text-4xl */
+    line-height: 3rem;
+  }
+}
+
+/* Flex Row/Column Responsive */
+.flex-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .flex-responsive {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* Responsive Padding */
+.p-responsive {
+  padding: 1rem; /* p-4 */
+}
+
+@media (min-width: 640px) {
+  .p-responsive {
+    padding: 1.25rem; /* sm:p-5 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .p-responsive {
+    padding: 1.5rem; /* lg:p-6 */
+  }
+}
+
+/* Responsive Padding-X */
+.px-responsive {
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .px-responsive {
+    padding-left: 1.5rem; /* sm:px-6 */
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .px-responsive {
+    padding-left: 2rem; /* lg:px-8 */
+    padding-right: 2rem;
+  }
+}
+
+/* Responsive Padding-Y */
+.py-responsive {
+  padding-top: 1rem; /* py-4 */
+  padding-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .py-responsive {
+    padding-top: 1.5rem; /* sm:py-6 */
+    padding-bottom: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .py-responsive {
+    padding-top: 2rem; /* lg:py-8 */
+    padding-bottom: 2rem;
+  }
+}
+
+/* Mobile-First Margin */
+.gap-responsive {
+  gap: 0.75rem; /* gap-3 */
+}
+
+@media (min-width: 640px) {
+  .gap-responsive {
+    gap: 1rem; /* sm:gap-4 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .gap-responsive {
+    gap: 1.5rem; /* lg:gap-6 */
+  }
+}
+
+/* Touch-Friendly Button Size */
+.btn-touch-friendly {
+  min-height: 2.75rem; /* 44px minimum for touch */
+  min-width: 2.75rem;
+  padding: 0.75rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  transition: all 200ms ease;
+}
+
+@media (min-width: 640px) {
+  .btn-touch-friendly {
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+/* Responsive Section */
+.section-responsive {
+  padding: 2rem 1rem; /* py-8 px-4 */
+}
+
+@media (min-width: 640px) {
+  .section-responsive {
+    padding: 3rem 1.5rem; /* sm:py-12 sm:px-6 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-responsive {
+    padding: 4rem 2rem; /* lg:py-16 lg:px-8 */
+  }
+}
+
+/* ===== ENHANCED MOBILE-FIRST RESPONSIVE IMPROVEMENTS ===== */
+
+/* Touch device optimizations */
+@media (pointer: coarse) {
+  button, a, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input, textarea, select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+  }
+}
+
+/* Very small mobile devices (320px - 374px) */
+@media (max-width: 374px) {
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .px-4 {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  
+  .gap-4 {
+    gap: 0.75rem !important;
+  }
+}
+
+/* Small mobile devices (375px - 599px) */
+@media (min-width: 375px) and (max-width: 599px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Tablet devices (600px - 1023px) */
+@media (min-width: 600px) and (max-width: 1023px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Large devices (1024px+) */
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Improve scroll behavior for mobile */
+@supports (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Image responsiveness */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Responsive SVG icons */
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Focus visibility for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #7C3AED;
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  body {
+    color: #000 !important;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* Dark mode improvements */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+}
+
+/* Improve readability on narrow screens */
+@media (max-width: 640px) {
+  body {
+    word-break: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
+/* Better modal/overlay handling on mobile */
+@media (max-width: 640px) {
+  .fixed {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+}
+
+/* Optimize for landscape mode on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  section {
+    min-height: auto;
+  }
+  
+  .hero-section {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Print styles for responsiveness */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .no-print {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar Styles for Horizontal Scrolling */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-track-gray-200::-webkit-scrollbar-track {
+  background: rgba(229, 231, 235, 0.5);
+  border-radius: 10px;
+}
+
+.scrollbar-thumb-purple-400::-webkit-scrollbar-thumb {
+  background: rgba(192, 132, 252, 0.7);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.scrollbar-thumb-purple-400:hover::-webkit-scrollbar-thumb,
+.hover\:scrollbar-thumb-purple-500::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.9);
+}
+
+/* Firefox scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(192, 132, 252, 0.7) rgba(229, 231, 235, 0.5);
+}
+
+/* Hide scrollbar completely */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
