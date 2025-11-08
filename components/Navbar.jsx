@@ -189,12 +189,12 @@ export default function Navbar() {
     >
       <style jsx>{`
         .nav-backdrop {
-          background-color: rgba(255, 255, 255, 0.8);
-          -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+          background-color: rgba(255, 255, 255, 0.1);
+          -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
           /* Fallback for browsers without backdrop-filter support */
-          @supports not (backdrop-filter: blur(4px)) {
-            background-color: rgba(255, 255, 255, 0.95);
+          @supports not (backdrop-filter: blur(8px)) {
+            background-color: rgba(255, 255, 255, 0.7);
           }
         }
 
@@ -220,18 +220,18 @@ export default function Navbar() {
 
       {/* Desktop */}
       <div className="hidden lg:block">
-        <ul className="flex flex-row gap-2 lg:gap-3 p-3 lg:p-4 nav-backdrop rounded-xl border border-gray-200/50 shadow-sm">
+        <ul className="flex flex-row gap-2 lg:gap-3 p-3 lg:p-4 nav-backdrop rounded-xl border border-white/10 shadow-lg">
           {navigationItems.map((item) => {
             const isActive = activeHash === item.href;
             return (
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`cursor-target flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600
+                  className={`cursor-target flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-lg text-sm lg:text-base transition-all duration-300 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400
                     ${
                       isActive
-                        ? "bg-purple-600 text-white font-semibold shadow-md"
-                        : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                        ? "bg-white/10 text-purple-500 font-semibold backdrop-blur-sm"
+                        : "text-gray-700 hover:bg-white/5 hover:text-purple-500 active:bg-white/10"
                     }`}
                   aria-label={`Navigate to ${item.name}`}
                   aria-current={isActive ? "page" : undefined}
@@ -261,18 +261,18 @@ export default function Navbar() {
 
       {/* Tablet (md-lg) */}
       <div className="hidden md:block lg:hidden">
-        <ul className="flex flex-row gap-2 p-2 nav-backdrop rounded-lg border border-gray-200/50 shadow-sm flex-wrap justify-end">
+        <ul className="flex flex-row gap-2 p-2 nav-backdrop rounded-lg border border-white/10 shadow-lg flex-wrap justify-end">
           {navigationItems.map((item) => {
             const isActive = activeHash === item.href;
             return (
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`cursor-target flex items-center justify-center gap-1 px-2 py-2 rounded-lg text-xs transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 min-h-[44px] min-w-[44px]
+                  className={`cursor-target flex items-center justify-center gap-1 px-2 py-2 rounded-lg text-xs transition-all duration-300 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 min-h-[44px] min-w-[44px]
                     ${
                       isActive
-                        ? "bg-purple-600 text-white font-semibold shadow-md"
-                        : "text-gray-700 hover:bg-gray-100 active:bg-gray-200"
+                        ? "bg-white/10 text-purple-500 font-semibold backdrop-blur-sm"
+                        : "text-gray-700 hover:bg-white/5 hover:text-purple-500 active:bg-white/10"
                     }`}
                   aria-label={`Navigate to ${item.name}`}
                   aria-current={isActive ? "page" : undefined}
@@ -305,7 +305,7 @@ export default function Navbar() {
         <button
           ref={toggleBtnRef}
           onClick={toggleMenu}
-          className="cursor-target p-2 sm:p-2.5 rounded-lg bg-purple-600 text-white shadow-md hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="cursor-target p-2 sm:p-2.5 rounded-lg bg-white/10 text-purple-500 shadow-lg backdrop-blur-sm hover:bg-white/20 active:bg-white/30 transition-all duration-300 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-400 min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-menu"
@@ -319,13 +319,13 @@ export default function Navbar() {
 
         <div
           id="mobile-menu"
-          className={`absolute top-14 sm:top-16 right-0 w-screen sm:w-64 rounded-xl sm:rounded-xl overflow-hidden transition-all duration-200 ease-in-out transform origin-top-right
+          className={`absolute top-14 sm:top-16 right-0 w-screen sm:w-64 rounded-xl sm:rounded-xl overflow-hidden transition-all duration-300 ease-in-out transform origin-top-right
             ${
               isMenuOpen
                 ? "scale-100 opacity-100"
                 : "scale-95 opacity-0 pointer-events-none"
             }
-            bg-white shadow-2xl border border-gray-200 max-h-[calc(100vh-120px)] overflow-y-auto`}
+            nav-backdrop shadow-xl border border-white/10 max-h-[calc(100vh-120px)] overflow-y-auto`}
           role="menu"
           aria-hidden={!isMenuOpen}
         >
@@ -340,11 +340,11 @@ export default function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`cursor-target group flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 min-h-[44px] text-sm sm:text-base
+                    className={`cursor-target group flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-lg transition-all duration-300 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 min-h-[44px] text-sm sm:text-base
                       ${
                         isActive
-                          ? "bg-purple-600 text-white font-semibold shadow-md"
-                          : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                          ? "bg-white/10 text-purple-500 font-semibold backdrop-blur-sm"
+                          : "text-gray-700 hover:bg-white/5 hover:text-purple-500 active:bg-white/10"
                       }`}
                     aria-label={`Navigate to ${item.name}`}
                     aria-current={isActive ? "page" : undefined}
