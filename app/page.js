@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, lazy, Suspense, useEffect } from "react";
+import { useState, lazy, Suspense, useEffect, useCallback } from "react";
 import TextType from "../components/TextType";
 import CircularText from "../components/CircularText";
-import { ArrowRight, Mail, Download, Eye } from "lucide-react";
+import { ArrowRight, Mail, Download, Eye, ChevronUp } from "lucide-react";
 
 // Lazy load components that are below the fold
 const TargetCursor = lazy(() => import("../components/TargetCursor"));
@@ -18,25 +18,66 @@ export default function Home() {
   const [avatarSrc, setAvatarSrc] = useState("/image.png");
   const [viewCount, setViewCount] = useState(0);
   const [isCounterLoading, setIsCounterLoading] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [stats, setStats] = useState({ experience: 0, projects: 0 });
   
   const handleAvatarError = () => setAvatarSrc("/fallback.svg");
 
   // Impression counter - tracks page views
+  // Handle scroll progress and scroll-to-top visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const winScroll = window.scrollY;
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = (winScroll / height) * 100;
+      setScrollProgress(scrolled);
+      setShowScrollTop(winScroll > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Animate stats counter
+  useEffect(() => {
+    const animateValue = (start, end, duration, setter) => {
+      const startTimestamp = performance.now();
+      const animate = (currentTime) => {
+        const elapsed = currentTime - startTimestamp;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        setter(Math.floor(progress * (end - start) + start));
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      requestAnimationFrame(animate);
+    };
+
+    animateValue(0, 3, 2000, (value) => setStats(prev => ({ ...prev, experience: value })));
+    animateValue(0, 20, 2000, (value) => setStats(prev => ({ ...prev, projects: value })));
+  }, []);
+
+  // View counter
   useEffect(() => {
     const incrementViewCount = () => {
-      // Get current count from localStorage
       const storedCount = localStorage.getItem('portfolio_views');
       const currentCount = storedCount ? parseInt(storedCount, 10) : 0;
       
-      // Increment and save
       const newCount = currentCount + 1;
       localStorage.setItem('portfolio_views', newCount.toString());
       setViewCount(newCount);
       setIsCounterLoading(false);
     };
 
-    // Small delay to ensure client-side rendering
     setTimeout(incrementViewCount, 100);
+  }, []);
+
+  // Scroll to top handler
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const tags = [
@@ -138,15 +179,15 @@ export default function Home() {
               {/* Stats */}
               <div className="mt-6 flex gap-4">
                 {[
-                  { value: "3+", label: "Years Experience", color: "text-purple-600" },
-                  { value: "20+", label: "Projects Completed", color: "text-pink-600" },
+                  { value: stats.experience, label: "Years Experience", color: "text-purple-600" },
+                  { value: stats.projects, label: "Projects Completed", color: "text-pink-600" },
                 ].map((stat, i) => (
                   <div
                     key={i}
                     className="flex flex-col items-center bg-white px-6 py-4 rounded-xl shadow border border-gray-200 hover:border-purple-200 hover:shadow-lg transition"
                   >
                     <span className={`text-3xl font-bold ${stat.color}`}>
-                      {stat.value}
+                      {stat.value}+
                     </span>
                     <span className="text-sm font-medium text-gray-600 mt-1">
                       {stat.label}
@@ -235,6 +276,25 @@ export default function Home() {
           hideDefaultCursor={true}
         />
       </Suspense>
+
+      {/* Scroll Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 z-50">
+        <div 
+          className="h-full bg-purple-600 transition-all duration-150"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
+      {/* Scroll to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        }`}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp className="w-6 h-6" />
+      </button>
     </main>
   );
 }
