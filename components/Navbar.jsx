@@ -189,46 +189,13 @@ export default function Navbar() {
     >
       <style jsx>{`
         .nav-backdrop {
-          background: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.03) 0%,
-            rgba(255, 255, 255, 0.07) 100%
-          );
-          -webkit-backdrop-filter: blur(16px) saturate(180%);
-          backdrop-filter: blur(16px) saturate(180%);
+          background-color: rgba(255, 255, 255, 0.8);
+          -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
           /* Fallback for browsers without backdrop-filter support */
-          @supports not (backdrop-filter: blur(16px)) {
-            background: linear-gradient(
-              135deg,
-              rgba(255, 255, 255, 0.7) 0%,
-              rgba(255, 255, 255, 0.8) 100%
-            );
+          @supports not (backdrop-filter: blur(4px)) {
+            background-color: rgba(255, 255, 255, 0.95);
           }
-        }
-        
-        .glass-highlight {
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .glass-highlight::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.1),
-            transparent
-          );
-          transition: 0.5s;
-        }
-        
-        .glass-highlight:hover::before {
-          left: 100%;
         }
 
         @keyframes fade-in-up {
@@ -253,18 +220,18 @@ export default function Navbar() {
 
       {/* Desktop */}
       <div className="hidden lg:block">
-        <ul className="flex flex-row gap-2 lg:gap-3 p-2 lg:p-3 nav-backdrop rounded-2xl border border-white/10 shadow-lg">
+        <ul className="flex flex-row gap-2 lg:gap-3 p-3 lg:p-4 nav-backdrop rounded-xl border border-gray-200/50 shadow-sm">
           {navigationItems.map((item) => {
             const isActive = activeHash === item.href;
             return (
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`cursor-target flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-xl text-sm lg:text-base transition-all duration-500 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/50 glass-highlight hover:scale-105 transform
+                  className={`cursor-target flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600
                     ${
                       isActive
-                        ? "bg-gradient-to-r from-purple-500/20 to-purple-400/10 text-purple-300 font-medium backdrop-blur-md"
-                        : "text-gray-400 hover:text-purple-300"
+                        ? "bg-purple-600 text-white font-semibold shadow-md"
+                        : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                     }`}
                   aria-label={`Navigate to ${item.name}`}
                   aria-current={isActive ? "page" : undefined}
@@ -294,18 +261,18 @@ export default function Navbar() {
 
       {/* Tablet (md-lg) */}
       <div className="hidden md:block lg:hidden">
-        <ul className="flex flex-row gap-2 p-2 nav-backdrop rounded-2xl border border-white/10 shadow-lg flex-wrap justify-end">
+        <ul className="flex flex-row gap-2 p-2 nav-backdrop rounded-lg border border-gray-200/50 shadow-sm flex-wrap justify-end">
           {navigationItems.map((item) => {
             const isActive = activeHash === item.href;
             return (
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`cursor-target flex items-center justify-center gap-1 px-2 py-2 rounded-xl text-xs transition-all duration-500 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/50 min-h-[44px] min-w-[44px] glass-highlight hover:scale-105 transform group
+                  className={`cursor-target flex items-center justify-center gap-1 px-2 py-2 rounded-lg text-xs transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 min-h-[44px] min-w-[44px]
                     ${
                       isActive
-                        ? "bg-gradient-to-r from-purple-500/20 to-purple-400/10 text-purple-300 font-medium backdrop-blur-md"
-                        : "text-gray-400 hover:text-purple-300"
+                        ? "bg-purple-600 text-white font-semibold shadow-md"
+                        : "text-gray-700 hover:bg-gray-100 active:bg-gray-200"
                     }`}
                   aria-label={`Navigate to ${item.name}`}
                   aria-current={isActive ? "page" : undefined}
@@ -338,7 +305,7 @@ export default function Navbar() {
         <button
           ref={toggleBtnRef}
           onClick={toggleMenu}
-          className="cursor-target p-2 sm:p-2.5 rounded-xl bg-gradient-to-r from-purple-500/20 to-purple-400/10 text-purple-300 shadow-lg backdrop-blur-md hover:bg-purple-500/15 active:bg-purple-500/20 transition-all duration-500 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-300/50 min-h-[44px] min-w-[44px] flex items-center justify-center hover:scale-105 transform glass-highlight"
+          className="cursor-target p-2 sm:p-2.5 rounded-lg bg-purple-600 text-white shadow-md hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-menu"
@@ -373,11 +340,11 @@ export default function Navbar() {
                 >
                   <Link
                     href={item.href}
-                    className={`cursor-target group flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-xl transition-all duration-500 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/50 min-h-[44px] text-sm sm:text-base glass-highlight hover:translate-x-1 transform
+                    className={`cursor-target group flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3 rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 min-h-[44px] text-sm sm:text-base
                       ${
                         isActive
-                          ? "bg-gradient-to-r from-purple-500/20 to-purple-400/10 text-purple-300 font-medium backdrop-blur-md"
-                          : "text-gray-400 hover:text-purple-300"
+                          ? "bg-purple-600 text-white font-semibold shadow-md"
+                          : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                       }`}
                     aria-label={`Navigate to ${item.name}`}
                     aria-current={isActive ? "page" : undefined}
@@ -393,8 +360,8 @@ export default function Navbar() {
                     <item.icon
                       size={20}
                       className={`${
-                        isActive ? "text-purple-400" : "text-gray-400"
-                      } transition-transform group-hover:scale-110 group-hover:text-purple-400 flex-shrink-0`}
+                        isActive ? "text-white" : "text-gray-600"
+                      } transition-transform group-hover:scale-110 flex-shrink-0`}
                       aria-hidden="true"
                     />
                     <span className="flex-1">{item.name}</span>
