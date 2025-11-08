@@ -21,7 +21,7 @@ export default function Home() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [stats, setStats] = useState({ experience: 0, projects: 0 });
-  
+
   const handleAvatarError = () => setAvatarSrc("/fallback.svg");
 
   // Impression counter - tracks page views
@@ -35,8 +35,8 @@ export default function Home() {
       setShowScrollTop(winScroll > 400);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Animate stats counter
@@ -46,9 +46,9 @@ export default function Home() {
       const animate = (currentTime) => {
         const elapsed = currentTime - startTimestamp;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         setter(Math.floor(progress * (end - start) + start));
-        
+
         if (progress < 1) {
           requestAnimationFrame(animate);
         }
@@ -56,18 +56,22 @@ export default function Home() {
       requestAnimationFrame(animate);
     };
 
-    animateValue(0, 3, 2000, (value) => setStats(prev => ({ ...prev, experience: value })));
-    animateValue(0, 20, 2000, (value) => setStats(prev => ({ ...prev, projects: value })));
+    animateValue(0, 3, 2000, (value) =>
+      setStats((prev) => ({ ...prev, experience: value }))
+    );
+    animateValue(0, 20, 2000, (value) =>
+      setStats((prev) => ({ ...prev, projects: value }))
+    );
   }, []);
 
   // View counter
   useEffect(() => {
     const incrementViewCount = () => {
-      const storedCount = localStorage.getItem('portfolio_views');
+      const storedCount = localStorage.getItem("portfolio_views");
       const currentCount = storedCount ? parseInt(storedCount, 10) : 0;
-      
+
       const newCount = currentCount + 1;
-      localStorage.setItem('portfolio_views', newCount.toString());
+      localStorage.setItem("portfolio_views", newCount.toString());
       setViewCount(newCount);
       setIsCounterLoading(false);
     };
@@ -75,9 +79,22 @@ export default function Home() {
     setTimeout(incrementViewCount, 100);
   }, []);
 
+  // Smooth scroll handler for navigation
+  const handleSmoothScroll = useCallback((targetId) => {
+    const target = document.getElementById(targetId);
+    if (target) {
+      const targetPosition = target.getBoundingClientRect().top + window.scrollY;
+      const offset = 80; // Offset to account for fixed header
+      window.scrollTo({
+        top: targetPosition - offset,
+        behavior: "smooth"
+      });
+    }
+  }, []);
+
   // Scroll to top handler
   const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
   const tags = [
@@ -138,20 +155,20 @@ export default function Home() {
 
             {/* CTA Buttons */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              <Link
-                href="#projects"
-                className="inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white text-base font-medium rounded-full shadow-md hover:bg-purple-700 transition"
+              <button
+                onClick={() => handleSmoothScroll('projects')}
+                className="group inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white text-base font-medium rounded-full shadow-md hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >
                 View Projects
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-              <Link
-                href="#contact"
-                className="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-800 text-base font-medium rounded-full shadow-md hover:bg-gray-200 transition"
+                <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={() => handleSmoothScroll('contact')}
+                className="group inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-800 text-base font-medium rounded-full shadow-md hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
-                <Mail className="mr-2 h-5 w-5" />
+                <Mail className="mr-2 h-5 w-5 transform group-hover:scale-110 transition-transform" />
                 Contact Me
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -179,8 +196,16 @@ export default function Home() {
               {/* Stats */}
               <div className="mt-6 flex gap-4">
                 {[
-                  { value: stats.experience, label: "Years Experience", color: "text-purple-600" },
-                  { value: stats.projects, label: "Projects Completed", color: "text-pink-600" },
+                  {
+                    value: stats.experience,
+                    label: "Years Experience",
+                    color: "text-purple-600",
+                  },
+                  {
+                    value: stats.projects,
+                    label: "Projects Completed",
+                    color: "text-pink-600",
+                  },
                 ].map((stat, i) => (
                   <div
                     key={i}
@@ -215,19 +240,19 @@ export default function Home() {
       <Suspense fallback={<LoadingFallback />}>
         <MyExpertise />
       </Suspense>
-      
+
       <Suspense fallback={<LoadingFallback />}>
         <ProjectLayout />
       </Suspense>
-      
+
       <Suspense fallback={<LoadingFallback />}>
         <Experience />
       </Suspense>
-      
+
       <Suspense fallback={<LoadingFallback />}>
         <Certifications />
       </Suspense>
-      
+
       <Suspense fallback={<LoadingFallback />}>
         <Contact />
       </Suspense>
@@ -238,8 +263,11 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <div className="text-sm text-gray-600 text-center sm:text-left">
-              Made by <span className="font-semibold text-gray-900">B N J S Narayana</span> ©{" "}
-              {new Date().getFullYear()}
+              Made by{" "}
+              <span className="font-semibold text-gray-900">
+                B N J S Narayana
+              </span>{" "}
+              © {new Date().getFullYear()}
             </div>
 
             {/* View Counter */}
@@ -250,9 +278,11 @@ export default function Home() {
                   <span className="inline-block w-16 h-4 bg-gray-200 animate-pulse rounded"></span>
                 ) : (
                   <>
-                    <span className="font-semibold text-gray-900">{viewCount.toLocaleString()}</span>
+                    <span className="font-semibold text-gray-900">
+                      {viewCount.toLocaleString()}
+                    </span>
                     <span className="ml-1">
-                      {viewCount === 1 ? 'impression' : 'impressions'}
+                      {viewCount === 1 ? "impression" : "impressions"}
                     </span>
                   </>
                 )}
@@ -279,7 +309,7 @@ export default function Home() {
 
       {/* Scroll Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 z-50">
-        <div 
+        <div
           className="h-full bg-purple-600 transition-all duration-150"
           style={{ width: `${scrollProgress}%` }}
         />
@@ -289,7 +319,9 @@ export default function Home() {
       <button
         onClick={scrollToTop}
         className={`fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
-          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+          showScrollTop
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-10 pointer-events-none"
         }`}
         aria-label="Scroll to top"
       >
