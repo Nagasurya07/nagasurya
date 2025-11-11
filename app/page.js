@@ -83,11 +83,12 @@ export default function Home() {
   const handleSmoothScroll = useCallback((targetId) => {
     const target = document.getElementById(targetId);
     if (target) {
-      const targetPosition = target.getBoundingClientRect().top + window.scrollY;
+      const targetPosition =
+        target.getBoundingClientRect().top + window.scrollY;
       const offset = 80; // Offset to account for fixed header
       window.scrollTo({
         top: targetPosition - offset,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   }, []);
@@ -146,7 +147,7 @@ export default function Home() {
               {tags.map((tag, i) => (
                 <span
                   key={i}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-full shadow-sm hover:bg-gray-200 transition"
+                  className="cursor-target px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-full shadow-sm hover:bg-gray-200 transition"
                 >
                   {tag}
                 </span>
@@ -156,15 +157,15 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <button
-                onClick={() => handleSmoothScroll('projects')}
-                className="group inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white text-base font-medium rounded-full shadow-md hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                onClick={() => handleSmoothScroll("projects")}
+                className="cursor-target group inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white text-base font-medium rounded-full shadow-md hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >
                 View Projects
                 <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
               </button>
               <button
-                onClick={() => handleSmoothScroll('contact')}
-                className="group inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-800 text-base font-medium rounded-full shadow-md hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                onClick={() => handleSmoothScroll("contact")}
+                className="cursor-target group inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-800 text-base font-medium rounded-full shadow-md hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
                 <Mail className="mr-2 h-5 w-5 transform group-hover:scale-110 transition-transform" />
                 Contact Me
@@ -209,7 +210,7 @@ export default function Home() {
                 ].map((stat, i) => (
                   <div
                     key={i}
-                    className="flex flex-col items-center bg-white px-6 py-4 rounded-xl shadow border border-gray-200 hover:border-purple-200 hover:shadow-lg transition"
+                    className="cursor-target flex flex-col items-center bg-white px-6 py-4 rounded-xl shadow border border-gray-200 hover:border-purple-200 hover:shadow-lg transition"
                   >
                     <span className={`text-3xl font-bold ${stat.color}`}>
                       {stat.value}+
@@ -226,7 +227,7 @@ export default function Home() {
                 href="https://drive.google.com/file/d/1zPn_LlaukI98ax1kQ3Cta30f6xjawNXu/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-base font-medium shadow-md hover:from-purple-500 hover:to-indigo-500 transition"
+                className="cursor-target mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-base font-medium shadow-md hover:from-purple-500 hover:to-indigo-500 transition"
               >
                 Resume
                 <Download className="h-5 w-5" />
@@ -295,14 +296,8 @@ export default function Home() {
       {/* Custom Cursor - Lazy Loaded */}
       <Suspense fallback={null}>
         <TargetCursor
-          outerColor="#A78BFA"
-          innerColor="#A78BFA"
-          outerSize={40}
-          innerSize={8}
-          outerScale={3}
-          innerScale={0.7}
-          outerAlpha={0.4}
-          innerAlpha={0.7}
+          targetSelector=".cursor-target, button, a, [role='button'], input, textarea, select, .clickable"
+          spinDuration={2}
           hideDefaultCursor={true}
         />
       </Suspense>
@@ -318,7 +313,7 @@ export default function Home() {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+        className={`cursor-target fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
           showScrollTop
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-10 pointer-events-none"
