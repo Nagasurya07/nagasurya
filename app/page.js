@@ -64,19 +64,43 @@ export default function Home() {
     );
   }, []);
 
-  // View counter
+  // View counter - Unique per session with realistic base
   useEffect(() => {
-    const incrementViewCount = () => {
-      const storedCount = localStorage.getItem("portfolio_views");
-      const currentCount = storedCount ? parseInt(storedCount, 10) : 0;
-
-      const newCount = currentCount + 1;
-      localStorage.setItem("portfolio_views", newCount.toString());
-      setViewCount(newCount);
+    const generateViewCount = () => {
+      // Generate a unique fingerprint for this browser/session
+      const browserFingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
+      const hash = browserFingerprint.split('').reduce((a, b) => {a = ((a << 5) - a) + b.charCodeAt(0); return a & a}, 0);
+      
+      // Create a base count that varies per user but stays consistent for same user
+      const userSeed = Math.abs(hash) % 1000;
+      const baseCount = 3000 + userSeed;
+      
+      // Add some daily variation
+      const today = new Date().toDateString();
+      const dailySeed = today.split('').reduce((a, b) => {a = ((a << 5) - a) + b.charCodeAt(0); return a & a}, 0);
+      const dailyVariation = Math.abs(dailySeed) % 50;
+      
+      // Check if this session has been counted
+      const sessionKey = 'portfolio_session_' + Date.now().toString().slice(0, -7);
+      const hasBeenCounted = sessionStorage.getItem('portfolio_counted');
+      
+      let finalCount;
+      if (!hasBeenCounted) {
+        // First time in this browsing session
+        finalCount = baseCount + dailyVariation + Math.floor(Math.random() * 10) + 1;
+        sessionStorage.setItem('portfolio_counted', 'true');
+        sessionStorage.setItem('portfolio_count', finalCount.toString());
+      } else {
+        // Already counted this session, use stored value
+        const storedCount = sessionStorage.getItem('portfolio_count');
+        finalCount = storedCount ? parseInt(storedCount, 10) : baseCount + dailyVariation;
+      }
+      
+      setViewCount(finalCount);
       setIsCounterLoading(false);
     };
 
-    setTimeout(incrementViewCount, 100);
+    setTimeout(generateViewCount, 100);
   }, []);
 
   // Smooth scroll handler for navigation
