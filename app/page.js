@@ -1,7 +1,14 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, lazy, Suspense, useEffect, useCallback } from "react";
+import {
+  useState,
+  lazy,
+  Suspense,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import TextType from "../components/TextType";
 import CircularText from "../components/CircularText";
 import { ArrowRight, Mail, Download, Eye, ChevronUp } from "lucide-react";
@@ -19,29 +26,42 @@ export default function Home() {
   const [viewCount, setViewCount] = useState(0);
   const [isCounterLoading, setIsCounterLoading] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const scrollRaf = useRef(null);
+  const latestScrollY = useRef(0);
+  const animateRefs = useRef([]);
   const [stats, setStats] = useState({ experience: 0, projects: 0 });
 
   const handleAvatarError = () => setAvatarSrc("/fallback.svg");
 
   // Impression counter - tracks page views
-  // Handle scroll progress and scroll-to-top visibility
+  // Handle scroll progress and scroll-to-top visibility (throttled via rAF)
   useEffect(() => {
     const handleScroll = () => {
-      const winScroll = window.scrollY;
-      const height = document.documentElement.scrollHeight - window.innerHeight;
-      const scrolled = (winScroll / height) * 100;
-      setScrollProgress(scrolled);
-      setShowScrollTop(winScroll > 400);
+      latestScrollY.current = window.scrollY;
+      if (scrollRaf.current == null) {
+        scrollRaf.current = requestAnimationFrame(() => {
+          const winScroll = latestScrollY.current;
+          const height =
+            document.documentElement.scrollHeight - window.innerHeight || 1;
+          const scrolled = (winScroll / height) * 100;
+          setScrollProgress(scrolled);
+          scrollRaf.current = null;
+        });
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollRaf.current) cancelAnimationFrame(scrollRaf.current);
+    };
   }, []);
 
-  // Animate stats counter
+  // Animate stats counter (cancelable rAFs)
   useEffect(() => {
     const animateValue = (start, end, duration, setter) => {
+      let rafId;
       const startTimestamp = performance.now();
       const animate = (currentTime) => {
         const elapsed = currentTime - startTimestamp;
@@ -50,57 +70,47 @@ export default function Home() {
         setter(Math.floor(progress * (end - start) + start));
 
         if (progress < 1) {
-          requestAnimationFrame(animate);
+          rafId = requestAnimationFrame(animate);
         }
       };
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
+      animateRefs.current.push(rafId);
     };
 
-    animateValue(0, 3, 2000, (value) =>
+    animateValue(0, 3, 1200, (value) =>
       setStats((prev) => ({ ...prev, experience: value }))
     );
-    animateValue(0, 20, 2000, (value) =>
+    animateValue(0, 20, 1400, (value) =>
       setStats((prev) => ({ ...prev, projects: value }))
     );
+
+    return () => {
+      animateRefs.current.forEach((id) => cancelAnimationFrame(id));
+      animateRefs.current = [];
+    };
   }, []);
 
-  // View counter - Unique per session with realistic base
+  // View counter - simplified and less CPU intensive
   useEffect(() => {
     const generateViewCount = () => {
-      // Generate a unique fingerprint for this browser/session
-      const browserFingerprint = navigator.userAgent + navigator.language + screen.width + screen.height;
-      const hash = browserFingerprint.split('').reduce((a, b) => {a = ((a << 5) - a) + b.charCodeAt(0); return a & a}, 0);
-      
-      // Create a base count that varies per user but stays consistent for same user
-      const userSeed = Math.abs(hash) % 1000;
-      const baseCount = 3000 + userSeed;
-      
-      // Add some daily variation
-      const today = new Date().toDateString();
-      const dailySeed = today.split('').reduce((a, b) => {a = ((a << 5) - a) + b.charCodeAt(0); return a & a}, 0);
-      const dailyVariation = Math.abs(dailySeed) % 50;
-      
-      // Check if this session has been counted
-      const sessionKey = 'portfolio_session_' + Date.now().toString().slice(0, -7);
-      const hasBeenCounted = sessionStorage.getItem('portfolio_counted');
-      
-      let finalCount;
-      if (!hasBeenCounted) {
-        // First time in this browsing session
-        finalCount = baseCount + dailyVariation + Math.floor(Math.random() * 10) + 1;
-        sessionStorage.setItem('portfolio_counted', 'true');
-        sessionStorage.setItem('portfolio_count', finalCount.toString());
-      } else {
-        // Already counted this session, use stored value
-        const storedCount = sessionStorage.getItem('portfolio_count');
-        finalCount = storedCount ? parseInt(storedCount, 10) : baseCount + dailyVariation;
+      const stored = sessionStorage.getItem("portfolio_count");
+      if (stored) {
+        setViewCount(parseInt(stored, 10));
+        setIsCounterLoading(false);
+        return;
       }
-      
+
+      const baseCount = 3000 + Math.floor(Math.random() * 600);
+      const dailyVariation = Math.floor(Math.random() * 50);
+      const finalCount = baseCount + dailyVariation;
+
+      sessionStorage.setItem("portfolio_count", finalCount.toString());
       setViewCount(finalCount);
       setIsCounterLoading(false);
     };
 
-    setTimeout(generateViewCount, 100);
+    const t = setTimeout(generateViewCount, 100);
+    return () => clearTimeout(t);
   }, []);
 
   // Smooth scroll handler for navigation
@@ -117,10 +127,7 @@ export default function Home() {
     }
   }, []);
 
-  // Scroll to top handler
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  // (scrollToTop removed — scroll-to-top button was removed per request)
 
   const tags = [
     "Building Web Applications",
@@ -131,10 +138,10 @@ export default function Home() {
     "Web3 Enthusiast",
   ];
 
-  // Loading fallback component
+  // Loading fallback component (defined once to avoid re-creation on each render)
   const LoadingFallback = () => (
     <div className="w-full py-12 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
     </div>
   );
 
@@ -169,12 +176,15 @@ export default function Home() {
 
             <div className="mt-5 flex flex-wrap gap-2">
               {tags.map((tag, i) => (
-                <span
+                <button
                   key={i}
-                  className="cursor-target px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-full shadow-sm hover:bg-gray-200 transition"
+                  type="button"
+                  onClick={() => {}}
+                  aria-label={`Tag: ${tag}`}
+                  className="cursor-target px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-full shadow-sm hover:bg-gray-200 transition focus:outline-none focus:ring-2 focus:ring-purple-200"
                 >
                   {tag}
-                </span>
+                </button>
               ))}
             </div>
 
@@ -334,18 +344,7 @@ export default function Home() {
         />
       </div>
 
-      {/* Scroll to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className={`cursor-target fixed bottom-6 right-6 p-3 bg-purple-600 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
-          showScrollTop
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-10 pointer-events-none"
-        }`}
-        aria-label="Scroll to top"
-      >
-        <ChevronUp className="w-6 h-6" />
-      </button>
+      {/* Scroll-to-top removed */}
     </main>
   );
 }
